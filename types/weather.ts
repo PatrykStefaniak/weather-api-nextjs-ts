@@ -158,7 +158,7 @@ export type TimeZone = {
     localtime: string
 };
 
-export type CurrentResponse = {
+export type WeatherResponse = {
     location: WeatherLocation
     current: CurrentWeather
 };

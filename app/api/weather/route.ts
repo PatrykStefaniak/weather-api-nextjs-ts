@@ -1,13 +1,16 @@
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const city = searchParams.get('city');
+    const api = searchParams.get('api');
+    const q = searchParams.get('q');
 
-    if (!city) {
-        return Response.json({ error: 'City is required' }, { status: 400 });
+    if (!api) {
+        return Response.json({ error: 'Api name required' }, { status: 400 });
     }
 
+    searchParams.delete('type');
+
     const response = await fetch(
-        `http://api.weatherapi.com/v1/current.json?key=${process.env.API_KEY}&q=${city}`
+        `http://api.weatherapi.com/v1/${api}.json?key=${process.env.API_KEY}&${searchParams.toString()}`
     );
 
     if (!response.ok) {

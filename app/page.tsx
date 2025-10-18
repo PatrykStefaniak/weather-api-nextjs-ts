@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchWeather } from "@/lib/api";
+import { getWeather } from "@/lib/api";
 import { useState, useRef } from "react";
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleFetch = async () => {
-        const response = await fetchWeather(inputRef.current?.value || 'London');
+        const response = await getWeather(inputRef.current?.value || 'London');
         const json = await response.json();
         setResponse(JSON.stringify(json));
     };
