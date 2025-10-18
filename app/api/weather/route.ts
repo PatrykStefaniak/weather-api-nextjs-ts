@@ -1,7 +1,6 @@
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const api = searchParams.get('api');
-    const q = searchParams.get('q');
 
     if (!api) {
         return Response.json({ error: 'Api name required' }, { status: 400 });

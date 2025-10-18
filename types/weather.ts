@@ -106,10 +106,18 @@ export type Forecast = {
     }]
 };
 
+export type Forecasts = {
+    forecastday: Forecast[]
+};
+
 export type Condition = {
     text: string
     icon: string
     code: number
+};
+
+export type Alerts = {
+    alert: Alert[]
 };
  
 export type Alert = {
@@ -129,12 +137,14 @@ export type Alert = {
 };
 
 export type Astronomy = {
-    sunrise: string
-    sunset: string
-    moonrise: string
-    moonset: string
-    moon_phase: string
-    moon_illumination: string
+    astro: {
+        sunrise: string
+        sunset: string
+        moonrise: string
+        moonset: string
+        moon_phase: string
+        moon_illumination: string
+    }
 };
 
 export type Search = {
@@ -167,7 +177,7 @@ export type ForecastResponse = {
     location: WeatherLocation
     current: CurrentWeather
     forecast: Forecast[]
-    alerts: Alert[]
+    alerts: Alerts
 };
 
 export type FutureHistoryResponse = {

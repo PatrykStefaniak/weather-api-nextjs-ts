@@ -9,8 +9,7 @@ export default function Home() {
 
     const handleFetch = async () => {
         const response = await getWeather(inputRef.current?.value || 'London');
-        const json = await response.json();
-        setResponse(JSON.stringify(json));
+        setResponse(JSON.stringify(response));
     };
 
     return <>
