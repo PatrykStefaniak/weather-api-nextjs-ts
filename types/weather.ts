@@ -33,7 +33,10 @@ export type CurrentWeather = {
     uv: number
     gust_mph: number
     gust_kph: number
-    air_quality: number
+    air_quality?: AirQuality
+};
+
+export type AirQuality = {
     co: number
     no2: number
     o3: number
@@ -42,7 +45,7 @@ export type CurrentWeather = {
     pm10: number
     "us-epa-index": number
     "gb-defra-index": number
-};
+}
 
 export type Forecast = {
     date: string
@@ -180,13 +183,13 @@ export type WeatherResponse = {
 export type ForecastResponse = {
     location: WeatherLocation
     current: CurrentWeather
-    forecast: Forecast[]
+    forecast: Forecasts
     alerts: Alerts
 };
 
 export type FutureHistoryResponse = {
     location: WeatherLocation
-    forecast: Forecast[]
+    forecast: Forecasts
 };
 
 export type SearchResponse = {

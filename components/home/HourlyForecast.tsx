@@ -23,11 +23,13 @@ export default function HourlyForecast(props: HourlyForecastProps) {
                                 key={index}
                                 className="flex flex-col items-center gap-2 min-w-[80px] p-3 rounded-lg hover:bg-blue-50 transition-colors"
                             >
-                                <span className="text-sm font-medium text-gray-600">{hour.time}</span>
+                                <span className="text-sm font-medium text-gray-600">{hour.time.split(' ')[1]}</span>
                                 <Image
-                                    src={hour.condition.icon}
+                                    src={"https:" + hour.condition.icon}
                                     className="h-8 w-8 text-blue-600"
                                     alt={hour.condition.text}
+                                    width={24}
+                                    height={24}
                                 />
                                 <span className="text-lg font-semibold text-gray-900">{hour.temp_c}°</span>
                             </div>

@@ -15,7 +15,7 @@ export default function DetailsItem(props: DetailsItemProps) {
                 <Icon className="h-5 w-5 text-blue-600" />
                 <span className="text-gray-600">{label}</span>
             </div>
-            <span className="font-semibold text-gray-900">{value} mph</span>
+            <span className="font-semibold text-gray-900">{value}</span>
         </div>
     );
 }

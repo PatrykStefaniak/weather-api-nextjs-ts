@@ -37,7 +37,7 @@ export default function Details(props: DetailsProps) {
                 />
                 <DetailsItem 
                     icon={Gauge}
-                    label="Wind"
+                    label="Pressure"
                     value={pressure + " in"}
                 />
                 <DetailsItem 
