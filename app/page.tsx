@@ -1,6 +1,6 @@
 'use client';
 
-import { getWeather } from "@/lib/api";
+import { getFuture, getWeather } from "@/lib/api";
 import { Cloud, Droplets, Eye, Gauge, Sun, Wind } from "lucide-react";
 import { useState, useRef } from "react";
 
@@ -10,11 +10,13 @@ export default function Home() {
 
     const handleFetch = async () => {
         const response = await getWeather(inputRef.current?.value || 'London');
+        // const response = await getFuture(inputRef.current?.value || 'London');
         setResponse(JSON.stringify(response));
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50">
+                            {response}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <header className="mb-8">
                     <div className="flex items-center justify-between mb-6">
@@ -24,11 +26,17 @@ export default function Home() {
                         </div>
                         <div className="flex gap-2 w-full max-w-md">
                             <input
+                                ref={inputRef}
                                 type="text"
                                 placeholder="Search for a city..."
                                 className="bg-white shadow-sm"
                             />
-                            <button className="bg-blue-600 hover:bg-blue-700">Search</button>
+                            <button
+                                className="bg-blue-600 hover:bg-blue-700"
+                                onClick={handleFetch}
+                            >
+                                Search
+                            </button>
                         </div>
                     </div>
                 </header>

@@ -12,10 +12,14 @@ export async function GET(request: Request) {
         `http://api.weatherapi.com/v1/${api}.json?key=${process.env.API_KEY}&${searchParams.toString()}`
     );
 
+    const data = await response.json();
+
     if (!response.ok) {
-        return Response.json({ error: 'Failed to fetch weather' }, { status: response.status });
+        return Response.json(
+            data,
+            {status: response.status},
+        );
     }
 
-    const data = await response.json();
     return Response.json(data);
 }
