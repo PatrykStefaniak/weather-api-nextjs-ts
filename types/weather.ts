@@ -192,9 +192,7 @@ export type FutureHistoryResponse = {
     forecast: Forecasts
 };
 
-export type SearchResponse = {
-    search: Search[]
-};
+export type SearchResponse = Search[];
 
 export type TimezoneResponse = {
     timezone: TimeZone

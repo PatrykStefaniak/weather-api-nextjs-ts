@@ -1,5 +1,8 @@
+import { getSearch } from "@/lib/api";
 import { Cloud } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Combobox from "../ui/Combobox";
+import { Search } from "@/types/weather";
 
 type HeaderProps = {
     handler: (q: string) => Promise<void>
@@ -7,10 +10,34 @@ type HeaderProps = {
 
 export default function Header(props: HeaderProps) {
     const { handler } = props;
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [cities, setCities] = useState<Search[]>([]);
+    const [search, setSearch] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const debouncedRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleButtonClick = async () => {
-        handler(inputRef.current?.value || 'London');
+        handler(search);
+    };
+
+    const handleSelect = (city: string) => {
+        handler(city);
+    }
+
+    const handleSearchCity = (city: string) => {
+        setSearch(city);
+        setIsLoading(true);
+
+        debouncedRef.current && clearTimeout(debouncedRef.current);
+
+        debouncedRef.current = setTimeout(async () => {
+            if (!city || city === "") {
+                setIsLoading(false);
+                return setCities([]);
+            }
+
+            setCities(await getSearch(city));
+            setIsLoading(false);
+        }, 500);
     };
 
     return (
@@ -21,11 +48,13 @@ export default function Header(props: HeaderProps) {
                     <h1 className="text-3xl font-bold text-gray-900">WeatherNalsi</h1>
                 </div>
                 <div className="flex gap-2 w-full max-w-md">
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        placeholder="Search for a city..."
-                        className="bg-white shadow-sm p-2 rounded-lg flex-1 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                    <Combobox<Search>
+                        value={search}
+                        handleChange={handleSearchCity}
+                        items={cities}
+                        renderer={(item: Search) => item.name + (item.region ? ", " + item.region : "") + ", " + item.country}
+                        handleSelect={handleSelect}
+                        isLoading={isLoading}
                     />
                     <button
                         className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-white font-semibold"
