@@ -29,12 +29,12 @@ export default function Header(props: HeaderProps) {
 
         debouncedRef.current && clearTimeout(debouncedRef.current);
 
-        debouncedRef.current = setTimeout(async () => {
-            if (!city || city === "") {
-                setIsLoading(false);
-                return setCities([]);
-            }
+        if (city === "") {
+            setIsLoading(false);
+            return setCities([]);
+        }
 
+        debouncedRef.current = setTimeout(async () => {
             setCities(await getSearch(city));
             setIsLoading(false);
         }, 500);
@@ -47,7 +47,7 @@ export default function Header(props: HeaderProps) {
                     <Cloud className="h-10 w-10 text-blue-600" />
                     <h1 className="text-3xl font-bold text-gray-900">WeatherNalsi</h1>
                 </div>
-                <div className="flex gap-2 w-full max-w-md">
+                <div className="flex gap-2 max-w-sm w-full">
                     <Combobox<Search>
                         value={search}
                         handleChange={handleSearchCity}
