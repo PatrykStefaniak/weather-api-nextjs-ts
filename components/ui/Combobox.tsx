@@ -3,7 +3,7 @@ import { ReactNode, useRef, useState, MouseEvent, ChangeEvent, KeyboardEvent } f
 type ComboboxProps<T> = {
     items: T[]
     value: string
-    handleChange: (value: string) => void
+    handleChange: (value: string, isSelected?: boolean) => void
     handleSelect?: (item: string) => void
     renderer?: (item: T) => ReactNode
     getKey?: (item: T, index: number) => string | number
@@ -20,7 +20,11 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     };
 
     const onSelectItem = (e: MouseEvent<HTMLLIElement>) => {
-        handleChange(e.currentTarget.innerText || '');
+        e.preventDefault();
+
+        handleChange(e.currentTarget.innerText || '', true);
+
+        inputRef.current?.blur();
 
         setIsOpen(false);
     }
@@ -32,14 +36,16 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     };
 
     return (
-        <div className="relative w-full">
+        <div
+            className="relative w-full"
+            onBlur={() => setIsOpen(false)}
+        >
             <input
                 name="search"
                 autoComplete="off"
                 className="w-full bg-white shadow-sm p-2 rounded-lg flex-1 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
                 ref={inputRef}
                 value={value}
-                onBlur={() => setIsOpen(false)}
                 onFocus={() => setIsOpen(true)}
                 onChange={onInputChange}
                 onKeyDown={onKeyDown}
@@ -62,7 +68,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                                 <li
                                     key={getKey ? getKey(item, index) : (item as any).id || index}
                                     className="rounded-md cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-100"
-                                    onClick={onSelectItem}
+                                    onMouseDown={onSelectItem}
                                 >
                                     {renderer ? renderer(item) : (item as any).name || item}
                                 </li>

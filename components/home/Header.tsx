@@ -23,8 +23,13 @@ export default function Header(props: HeaderProps) {
         handler(city);
     }
 
-    const handleSearchCity = (city: string) => {
+    const handleSearchCity = (city: string, isSelected?: boolean) => {
         setSearch(city);
+
+        if (isSelected) {
+            return handleButtonClick();
+        }
+
         setIsLoading(true);
 
         debouncedRef.current && clearTimeout(debouncedRef.current);
