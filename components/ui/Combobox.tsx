@@ -6,7 +6,7 @@ type ComboboxProps<T> = {
     handleChange: (value: string, isSelected?: boolean) => void
     handleSelect?: (item: string) => void
     renderer?: (item: T) => ReactNode
-    getKey?: (item: T, index: number) => string | number
+    getKey: (item: T, index: number) => string | number
     isLoading?: boolean
 };
 
@@ -30,8 +30,8 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     }
 
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleSelect && handleSelect(e.currentTarget.value);
+        if (e.key === 'Enter' && handleSelect) {
+            handleSelect(e.currentTarget.value);
         }
     };
 
@@ -66,11 +66,11 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                         <ul className={(isLoading && "opacity-20 min-h-11 ") + "max-h-60 p-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"}>
                             {items.map((item, index) => (
                                 <li
-                                    key={getKey ? getKey(item, index) : (item as any).id || index}
+                                    key={getKey(item, index)}
                                     className="rounded-md cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-100"
                                     onMouseDown={onSelectItem}
                                 >
-                                    {renderer ? renderer(item) : (item as any).name || item}
+                                    {renderer ? renderer(item) : String(item)}
                                 </li>
                             ))}
                         </ul>

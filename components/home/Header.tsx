@@ -1,6 +1,6 @@
 import { getSearch } from "@/lib/api";
 import { Cloud } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Combobox from "../ui/Combobox";
 import { Search } from "@/types/weather";
 
@@ -32,7 +32,10 @@ export default function Header(props: HeaderProps) {
 
         setIsLoading(true);
 
-        debouncedRef.current && clearTimeout(debouncedRef.current);
+        if (debouncedRef.current) {
+            clearTimeout(debouncedRef.current);
+            debouncedRef.current = null;
+        }
 
         if (city === "") {
             setIsLoading(false);
@@ -45,6 +48,14 @@ export default function Header(props: HeaderProps) {
         }, 500);
     };
 
+    useEffect(() => {
+        return () => {
+            if (debouncedRef.current) {
+                clearTimeout(debouncedRef.current);
+            }
+        };
+    }, []);
+
     return (
         <header className="mb-8">
             <div className="flex items-center justify-between mb-6">
@@ -54,6 +65,7 @@ export default function Header(props: HeaderProps) {
                 </div>
                 <div className="flex gap-2 max-w-sm w-full">
                     <Combobox<Search>
+                        getKey={(item: Search) => item.id}
                         value={search}
                         handleChange={handleSearchCity}
                         items={cities}
