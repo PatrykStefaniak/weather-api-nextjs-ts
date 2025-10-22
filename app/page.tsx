@@ -3,11 +3,12 @@
 import CurrentWeather from "@/components/home/CurrentWeather";
 import Header from "@/components/home/Header";
 import Details from "@/components/home/Details";
-import { getForecast } from "@/lib/api";
-import { useState } from "react";
+import { getForecast, getIpLocation } from "@/lib/api";
+import { useEffect, useState } from "react";
 import HourlyForecast from "@/components/home/HourlyForecast";
 import DailyForecast from "@/components/home/DailyForecast";
 import { ForecastResponse } from "@/types/weather";
+import Card from "@/components/ui/Card";
 
 export default function Home() {
     const [response, setResponse] = useState<ForecastResponse | null>(null);
@@ -15,6 +16,14 @@ export default function Home() {
     const handleFetch = async (q: string) => {
         setResponse(await getForecast(q, 14));
     };
+
+    useEffect(() => {
+        (async () => {
+            const location = await getIpLocation();
+
+            handleFetch(location.city);
+        })();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50">

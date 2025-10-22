@@ -1,4 +1,4 @@
-import { AstronomyResponse, ForecastResponse, FutureHistoryResponse, SearchResponse, TimezoneResponse, WeatherResponse } from "@/types/weather";
+import { AstronomyResponse, ForecastResponse, FutureHistoryResponse, IpLocationResponse, SearchResponse, TimezoneResponse, WeatherResponse } from "@/types/weather";
 
 export const getWeather = async (query: string): Promise<WeatherResponse> => {
     const response = await fetch(`/api/weather?api=current&q=${query}`);
@@ -75,4 +75,15 @@ export const getAstronomy = async (city: string, date: Date): Promise<AstronomyR
     }
 
     return json as AstronomyResponse;
+};
+
+export const getIpLocation = async (): Promise<IpLocationResponse> => {
+    const response = await fetch(`/api/ip-location`);
+    const json = await response.json();
+
+    if (json.error) {
+        throw new Error(json.error);
+    }
+
+    return json as IpLocationResponse;
 };
