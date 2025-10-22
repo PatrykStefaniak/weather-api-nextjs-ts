@@ -1,60 +1,15 @@
-'use client';
+import Main from '@/components/home/Main';
 
-import CurrentWeather from "@/components/home/CurrentWeather";
-import Header from "@/components/home/Header";
-import Details from "@/components/home/Details";
-import { getForecast, getIpLocation } from "@/lib/api";
-import { useEffect, useState } from "react";
-import HourlyForecast from "@/components/home/HourlyForecast";
-import DailyForecast from "@/components/home/DailyForecast";
-import { ForecastResponse } from "@/types/weather";
-import Card from "@/components/ui/Card";
+export default async function Home() {
+    try {
+        const response = await fetch(
+            `https://api.weatherapi.com/v1/forecast.json?key=${process.env.API_KEY}&q=Seoul&days=14`,
+            { next: { revalidate: 3600 } }
+        );
+        const json = await response.json();
 
-export default function Home() {
-    const [response, setResponse] = useState<ForecastResponse | null>(null);
-
-    const handleFetch = async (q: string) => {
-        setResponse(await getForecast(q, 14));
-    };
-
-    useEffect(() => {
-        (async () => {
-            const location = await getIpLocation();
-
-            handleFetch(location.city);
-        })();
-    }, []);
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Header handler={handleFetch} />
-                {
-                    response
-                        ? <>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                                <CurrentWeather
-                                    name={response.location.name}
-                                    country={response.location.country}
-                                    temperature={response.current.temp_c}
-                                    condition={response.current.condition.text}
-                                    precipitation={response.current.precip_mm}
-                                    airQuality={response.current.air_quality?.["us-epa-index"]}
-                                />
-                                <Details
-                                    windSpeed={response.current.wind_kph}
-                                    humidity={response.current.humidity}
-                                    visibility={response.current.vis_km}
-                                    pressure={response.current.pressure_mb}
-                                    uvIndex={response.current.uv}
-                                />
-                            </div>
-                            <HourlyForecast hours={response.forecast.forecastday[0].hour} />
-                            <DailyForecast forecastDays={response.forecast} />
-                        </>
-                        : null
-                }
-            </div>
-        </div>
-    );
+        return <Main defaultWeather={json} />;
+    } catch (error) {
+        return <Main defaultWeather={null} />;
+    }
 }
