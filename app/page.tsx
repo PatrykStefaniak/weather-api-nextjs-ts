@@ -10,6 +10,7 @@ export default async function Home() {
 
         return <Main defaultWeather={json} />;
     } catch (error) {
+        console.error("Error fetching default weather data: ", error);
         return <Main defaultWeather={null} />;
     }
 }

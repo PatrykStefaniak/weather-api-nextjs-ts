@@ -8,10 +8,10 @@ import { useEffect, useState } from "react";
 import HourlyForecast from "@/components/home/HourlyForecast";
 import DailyForecast from "@/components/home/DailyForecast";
 import { ForecastResponse } from "@/types/weather";
-import Card from "@/components/ui/Card";
 
 export default function Main({ defaultWeather }: { defaultWeather: ForecastResponse | null }) {
     const [response, setResponse] = useState<ForecastResponse | null>(defaultWeather);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const handleFetch = async (q: string) => {
         setResponse(await getForecast(q, 14));
@@ -19,9 +19,11 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
 
     useEffect(() => {
         (async () => {
+            setIsLoading(() => true);
             const location = await getIpLocation();
 
             handleFetch(location.city);
+            setIsLoading(() => false);
         })();
     }, []);
 
@@ -30,8 +32,8 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <Header handler={handleFetch} />
                 {
-                    response
-                        ? <>
+                    response && (
+                        <div>
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                                 <CurrentWeather
                                     name={response.location.name}
@@ -40,6 +42,7 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
                                     condition={response.current.condition.text}
                                     precipitation={response.current.precip_mm}
                                     airQuality={response.current.air_quality?.["us-epa-index"]}
+                                    isLoading={isLoading}
                                 />
                                 <Details
                                     windSpeed={response.current.wind_kph}
@@ -47,19 +50,19 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
                                     visibility={response.current.vis_km}
                                     pressure={response.current.pressure_mb}
                                     uvIndex={response.current.uv}
+                                    isLoading={isLoading}
                                 />
                             </div>
-                            <HourlyForecast hours={response.forecast.forecastday[0].hour} />
-                            <DailyForecast forecastDays={response.forecast} />
-                        </>
-                        : (
-                            <Card>
-                                <div className="absolute inset-0 items-center justify-center flex">
-                                    <div className="w-10 h-10 animate-spin rounded-full border-b-2 border-t-1 border-blue-700"></div>
-                                </div>
-                                Hello
-                            </Card>
-                        )
+                            <HourlyForecast
+                                hours={response.forecast.forecastday[0].hour}
+                                isLoading={isLoading}
+                            />
+                            <DailyForecast
+                                forecastDays={response.forecast}
+                                isLoading={isLoading}
+                            />
+                        </div>
+                    )
                 }
             </div>
         </div>
