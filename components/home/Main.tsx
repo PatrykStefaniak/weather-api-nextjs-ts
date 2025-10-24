@@ -14,7 +14,9 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const handleFetch = async (q: string) => {
+        setIsLoading(() => true);
         setResponse(await getForecast(q, 14));
+        setIsLoading(() => false);
     };
 
     useEffect(() => {
@@ -22,8 +24,7 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
             setIsLoading(() => true);
             const location = await getIpLocation();
 
-            handleFetch(location.city);
-            setIsLoading(() => false);
+            await handleFetch(location.city);
         })();
     }, []);
 
