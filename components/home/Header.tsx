@@ -2,7 +2,8 @@ import { getSearch } from "@/lib/api";
 import { Cloud } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Combobox from "../ui/Combobox";
-import { Search } from "@/types/weather";
+import { Search, WeatherApiError } from "@/types/weather";
+import { useError } from "../context/ErrorProvider";
 
 type HeaderProps = {
     handler: (q: string) => Promise<void>
@@ -14,6 +15,7 @@ export default function Header(props: HeaderProps) {
     const [search, setSearch] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const debouncedRef = useRef<NodeJS.Timeout | null>(null);
+    const {addError, removeError} = useError();
 
     const handleSelect = (city: string) => {
         handler(city);
@@ -39,7 +41,19 @@ export default function Header(props: HeaderProps) {
         }
 
         debouncedRef.current = setTimeout(async () => {
-            setCities(await getSearch(city));
+            try {
+                setCities(await getSearch(city));
+            } catch (error) {
+                const knownError = error as WeatherApiError;
+                
+                addError({
+                    id: 'fetch-error' + Date.now(),
+                    title: 'Error while fetching forecast',
+                    message: knownError.error.message + " - code " + knownError.error.code,
+                    onClose: removeError
+                });
+            }
+
             setIsLoading(false);
         }, 500);
     };

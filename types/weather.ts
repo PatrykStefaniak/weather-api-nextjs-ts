@@ -220,3 +220,10 @@ export type IpLocationResponse = {
     localtime_epoch: number
     localtime: string
 };
+
+export type WeatherApiError = {
+    error: {
+        code: number
+        message: string
+    }
+}

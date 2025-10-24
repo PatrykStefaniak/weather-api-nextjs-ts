@@ -16,7 +16,7 @@ export const getForecast = async (query: string, days: number): Promise<Forecast
     const json = await response.json();
 
     if (json.error) {
-        throw new Error(json.error);
+        throw new Error("Error while fetching forecast", json.error);
     }
 
     return json as ForecastResponse;

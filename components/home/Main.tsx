@@ -4,29 +4,56 @@ import CurrentWeather from "@/components/home/CurrentWeather";
 import Header from "@/components/home/Header";
 import Details from "@/components/home/Details";
 import { getForecast, getIpLocation } from "@/lib/api";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import HourlyForecast from "@/components/home/HourlyForecast";
 import DailyForecast from "@/components/home/DailyForecast";
-import { ForecastResponse } from "@/types/weather";
+import { ForecastResponse, WeatherApiError } from "@/types/weather";
+import { useError } from "../context/ErrorProvider";
 
 export default function Main({ defaultWeather }: { defaultWeather: ForecastResponse | null }) {
     const [response, setResponse] = useState<ForecastResponse | null>(defaultWeather);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const {addError, removeError} = useError();
 
-    const handleFetch = async (q: string) => {
+    const handleFetch = useCallback(async (q: string) => {
         setIsLoading(() => true);
-        setResponse(await getForecast(q, 14));
+
+        try {
+            setResponse(await getForecast(q, 14));
+        } catch (error) {
+            const knownError = error as WeatherApiError;
+
+            addError({
+                id: 'fetch-error' + Date.now(),
+                title: 'Error while fetching forecast',
+                message: knownError.error.message + " - code " + knownError.error.code,
+                onClose: removeError
+            });
+        }
+
         setIsLoading(() => false);
-    };
+    }, [addError, removeError]);
 
     useEffect(() => {
         (async () => {
             setIsLoading(() => true);
-            const location = await getIpLocation();
 
-            await handleFetch(location.city);
+            try {
+                const location = await getIpLocation();
+
+                await handleFetch(location.city);
+            } catch (error) {
+                const knownError = error as WeatherApiError;
+
+                addError({
+                    id: 'fetch-error' + Date.now(),
+                    title: 'Error while fetching forecast',
+                    message: knownError.error.message + " - code " + knownError.error.code,
+                    onClose: removeError
+                });
+            }
         })();
-    }, []);
+    }, [handleFetch, addError, removeError]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50">
