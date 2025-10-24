@@ -15,10 +15,6 @@ export default function Header(props: HeaderProps) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const debouncedRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleButtonClick = async () => {
-        handler(search);
-    };
-
     const handleSelect = (city: string) => {
         handler(city);
     }
@@ -27,7 +23,7 @@ export default function Header(props: HeaderProps) {
         setSearch(city);
 
         if (isSelected) {
-            return handleButtonClick();
+            return handler(search);
         }
 
         setIsLoading(true);
@@ -73,12 +69,6 @@ export default function Header(props: HeaderProps) {
                         handleSelect={handleSelect}
                         isLoading={isLoading}
                     />
-                    <button
-                        className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-white font-semibold"
-                        onClick={handleButtonClick}
-                    >
-                        Search
-                    </button>
                 </div>
             </div>
         </header>
