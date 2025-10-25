@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import ErrorWindow, { ErrorWindowProps } from "../ui/ErrorWindow";
 
 type ErrorProviderProps = {
@@ -13,35 +13,38 @@ const ErrorContext = createContext<ErrorProviderProps | undefined>(undefined);
 export default function ErrorProvider({ children }: { children: React.ReactNode }) {
     const [windows, setWindows] = useState<ErrorWindowProps[]>([]);
 
-    const addError = (cfg: ErrorWindowProps) => {
-        const lastWindow = windows[windows.length - 1];
-        const { position } = cfg;
+    const addError = useCallback((cfg: ErrorWindowProps) => {
+        setWindows((prev) => {
+            const lastWindow = prev[prev.length - 1];
+            const { position } = cfg;
 
-        if (lastWindow) {
-            if (!position) {
-                cfg.position = {
-                    x: (lastWindow.position?.x || 0) + 5,
-                    y: (lastWindow.position?.y || 0) + 5
-                };
-            } else {
-                if (!position.x) {
-                    position.x = (lastWindow.position?.x || 0) + 5;
-                }
-                if (!position.y) {
-                    position.y = (lastWindow.position?.y || 0) + 5;
+            if (lastWindow) {
+                if (!position) {
+                    cfg.position = {
+                        x: (lastWindow.position?.x || 0) + 5,
+                        y: (lastWindow.position?.y || 0) + 5
+                    };
+                } else {
+                    if (!position.x) {
+                        position.x = (lastWindow.position?.x || 0) + 5;
+                    }
+                    if (!position.y) {
+                        position.y = (lastWindow.position?.y || 0) + 5;
+                    }
                 }
             }
-        }
 
-        setWindows((prev) => [...prev, cfg]);
-    };
+            return [...prev, cfg];
+        })
+    }, []);
 
-    const removeError = (id: string) => {
+    const removeError = useCallback((id: string) => {
         setWindows((prev) => prev.filter((window) => window.id !== id));
-    };
+    }, []);
 
     return (
         <ErrorContext.Provider value={{ addError, removeError }}>
+            {children}
             {
                 windows.map((window) => (
                     <ErrorWindow
@@ -54,7 +57,6 @@ export default function ErrorProvider({ children }: { children: React.ReactNode 
                     />
                 ))
             }
-            {children}
         </ErrorContext.Provider>
     );
 };

@@ -1,8 +1,8 @@
-import { getSearch } from "@/lib/api";
+import { getMessageFromError, getSearch } from "@/lib/api";
 import { Cloud } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Combobox from "../ui/Combobox";
-import { Search, WeatherApiError } from "@/types/weather";
+import { Search } from "@/types/weather";
 import { useError } from "../context/ErrorProvider";
 
 type HeaderProps = {
@@ -44,12 +44,10 @@ export default function Header(props: HeaderProps) {
             try {
                 setCities(await getSearch(city));
             } catch (error) {
-                const knownError = error as WeatherApiError;
-                
                 addError({
                     id: 'fetch-error' + Date.now(),
-                    title: 'Error while fetching forecast',
-                    message: knownError.error.message + " - code " + knownError.error.code,
+                    title: 'Error while fetching search suggestions',
+                    message: getMessageFromError(error),
                     onClose: removeError
                 });
             }

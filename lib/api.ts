@@ -1,4 +1,4 @@
-import { AstronomyResponse, ForecastResponse, FutureHistoryResponse, IpLocationResponse, SearchResponse, TimezoneResponse, WeatherResponse } from "@/types/weather";
+import { AstronomyResponse, ForecastResponse, FutureHistoryResponse, IpLocationResponse, SearchResponse, TimezoneResponse, WeatherApiError, WeatherResponse } from "@/types/weather";
 
 export const getWeather = async (query: string): Promise<WeatherResponse> => {
     const response = await fetch(`/api/weather?api=current&q=${query}`);
@@ -16,7 +16,7 @@ export const getForecast = async (query: string, days: number): Promise<Forecast
     const json = await response.json();
 
     if (json.error) {
-        throw new Error("Error while fetching forecast", json.error);
+        throw createError("Error while fetching forecast", json);
     }
 
     return json as ForecastResponse;
@@ -87,3 +87,20 @@ export const getIpLocation = async (): Promise<IpLocationResponse> => {
 
     return json as IpLocationResponse;
 };
+
+const createError = (message: string, json: WeatherApiError) => {
+    return new Error(message, {
+        cause: json
+    });
+}
+
+export const getMessageFromError = (error: unknown) => {
+    if (!error || !(error instanceof Error)) {
+        return String(error);
+    } else if (!error.cause) {
+        return error.message;
+    } else {
+        const knownError = error.cause as WeatherApiError;
+        return knownError.error.message + " - code " + knownError.error.code
+    }
+}

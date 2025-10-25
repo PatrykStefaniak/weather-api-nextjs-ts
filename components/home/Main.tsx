@@ -3,11 +3,11 @@
 import CurrentWeather from "@/components/home/CurrentWeather";
 import Header from "@/components/home/Header";
 import Details from "@/components/home/Details";
-import { getForecast, getIpLocation } from "@/lib/api";
+import { getForecast, getIpLocation, getMessageFromError } from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import HourlyForecast from "@/components/home/HourlyForecast";
 import DailyForecast from "@/components/home/DailyForecast";
-import { ForecastResponse, WeatherApiError } from "@/types/weather";
+import { ForecastResponse } from "@/types/weather";
 import { useError } from "../context/ErrorProvider";
 
 export default function Main({ defaultWeather }: { defaultWeather: ForecastResponse | null }) {
@@ -16,42 +16,40 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
     const {addError, removeError} = useError();
 
     const handleFetch = useCallback(async (q: string) => {
-        setIsLoading(() => true);
+        setIsLoading(true);
 
         try {
             setResponse(await getForecast(q, 14));
         } catch (error) {
-            const knownError = error as WeatherApiError;
-
             addError({
                 id: 'fetch-error' + Date.now(),
                 title: 'Error while fetching forecast',
-                message: knownError.error.message + " - code " + knownError.error.code,
+                message: getMessageFromError(error),
                 onClose: removeError
             });
         }
 
-        setIsLoading(() => false);
+        setIsLoading(false);
     }, [addError, removeError]);
 
     useEffect(() => {
         (async () => {
-            setIsLoading(() => true);
+            setIsLoading(true);
 
             try {
                 const location = await getIpLocation();
 
                 await handleFetch(location.city);
             } catch (error) {
-                const knownError = error as WeatherApiError;
-
                 addError({
                     id: 'fetch-error' + Date.now(),
-                    title: 'Error while fetching forecast',
-                    message: knownError.error.message + " - code " + knownError.error.code,
+                    title: 'Error while fetching location',
+                    message: getMessageFromError(error),
                     onClose: removeError
                 });
             }
+
+            setIsLoading(false);
         })();
     }, [handleFetch, addError, removeError]);
 
