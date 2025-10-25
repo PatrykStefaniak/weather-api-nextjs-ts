@@ -32,6 +32,8 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && handleSelect) {
             handleSelect(e.currentTarget.value);
+            inputRef.current?.blur();
+            setIsOpen(false);
         }
     };
 

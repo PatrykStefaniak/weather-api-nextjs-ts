@@ -24,19 +24,25 @@ export default function DailyForecast(props: DailyForecastProps) {
                         <div className="space-y-3">
                             {forecastDays.forecastday.map((forecast: Forecast, index) => {
                                 const day = forecast.day;
+                                const date = new Date(forecast.date)
+                                const dayOfWeek = dayOfWeekFromDate(date);
+
                                 return (
                                     <div
                                         key={index}
                                         className="flex items-center justify-between p-4 rounded-lg hover:bg-blue-50 transition-colors"
                                     >
                                         <div className="flex items-center gap-4 flex-1">
-                                            <span className="font-medium text-gray-900 w-28">{dayOfWeekFromDate(new Date(forecast.date))}</span>
+                                            <div className="w-28 flex flex-col text-center">
+                                                <span className="font-medium text-gray-900">{dayOfWeek}</span>
+                                                <span className="text-gray-900">{date.toLocaleString('default', { day: 'numeric', month: 'long' })}</span>
+                                            </div>
                                             <Image
                                                 src={"https:" + day.condition.icon}
-                                                className="h-6 w-6 text-blue-600"
+                                                className="h-8 w-8 text-blue-600"
                                                 alt={day.condition.text}
-                                                width={24}
-                                                height={24}
+                                                width={32}
+                                                height={32}
                                             />
                                             <span className="text-gray-600 flex-1">{day.condition.text}</span>
                                         </div>

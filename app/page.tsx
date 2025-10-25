@@ -9,7 +9,7 @@ export default async function Home() {
             { next: { revalidate: 3600 } }
         );
 
-        if (!response.ok) {
+        if (response.ok) {
             defaultWeather = await response.json();
         } else {
             console.error("Error fetching default weather data: ", response.status);

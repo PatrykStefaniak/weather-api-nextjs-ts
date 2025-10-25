@@ -7,7 +7,7 @@ import { getForecast, getIpLocation, getMessageFromError } from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 import HourlyForecast from "@/components/home/HourlyForecast";
 import DailyForecast from "@/components/home/DailyForecast";
-import { ForecastResponse } from "@/types/weather";
+import { Forecast, ForecastResponse, Hour } from "@/types/weather";
 import { useError } from "../context/ErrorProvider";
 
 export default function Main({ defaultWeather }: { defaultWeather: ForecastResponse | null }) {
@@ -39,7 +39,7 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
             try {
                 const location = await getIpLocation();
 
-                await handleFetch(location.city);
+                await handleFetch(location.lat + "," + location.lon);
             } catch (error) {
                 addError({
                     id: 'fetch-error' + Date.now(),
@@ -80,8 +80,11 @@ export default function Main({ defaultWeather }: { defaultWeather: ForecastRespo
                                 />
                             </div>
                             <HourlyForecast
-                                hours={response.forecast.forecastday[0].hour}
+                                hours={response.forecast.forecastday.reduce((acc: Hour[], current: Forecast) => {
+                                    return [...acc, ...current.hour]
+                                }, [])}
                                 isLoading={isLoading}
+                                localTime={response.location.localtime}
                             />
                             <DailyForecast
                                 forecastDays={response.forecast}
