@@ -80,6 +80,7 @@ export default function Header(props: HeaderProps) {
                         renderer={(item: Search) => item.name + (item.region ? ", " + item.region : "") + ", " + item.country}
                         handleSelect={handleSelect}
                         isLoading={isLoading}
+                        placeholder="Search by city or country..."
                     />
                 </div>
             </div>

@@ -8,10 +8,11 @@ type ComboboxProps<T> = {
     renderer?: (item: T) => ReactNode
     getKey: (item: T, index: number) => string | number
     isLoading?: boolean
+    placeholder: string
 };
 
 export default function Combobox<T>(props: ComboboxProps<T>) {
-    const { items, handleChange, getKey, renderer, handleSelect, value, isLoading } = props;
+    const { items, handleChange, getKey, renderer, handleSelect, value, isLoading, placeholder } = props;
     const [isOpen, setIsOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -51,6 +52,7 @@ export default function Combobox<T>(props: ComboboxProps<T>) {
                 onFocus={() => setIsOpen(true)}
                 onChange={onInputChange}
                 onKeyDown={onKeyDown}
+                placeholder={placeholder}
             />
             {
                 isOpen && (items.length || isLoading)
